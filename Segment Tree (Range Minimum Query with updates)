@@ -1,0 +1,88 @@
+#include <iostream>
+#include <bits/stdc++.h>
+#include <algorithm>
+#define lld long long int 
+#define mod 1000000007
+#define FIO ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+using namespace std;
+void buildTree(int *a,int l,int r,int *tree,int index)
+{
+    if(l == r)
+    {
+        tree[index]=a[l];
+        return ;
+    }
+    int m=(l+r)/2;
+    buildTree(a,l,m,tree,2*index);
+    buildTree(a,m+1,r,tree,2*index+1);
+    tree[index]=min(tree[2*index],tree[2*index+1]);
+    return ;
+}
+int query(int *tree,int tl,int tr,int ql,int qr,int index)
+{
+    if(tl >= ql && tr <= qr)
+    {
+        return tree[index];
+    }
+    if(ql > tr || tl > qr)
+    {
+        return INT_MAX;
+    }
+    int m=(tl+tr)/2;
+    int leftAnswer=query(tree,tl,m,ql,qr,2*index);
+    int rightAnswer=query(tree,m+1,tr,ql,qr,2*index+1);
+    return min(leftAnswer,rightAnswer);
+}
+void updateNode(int *tree,int l,int r,int i,int inc,int index)
+{
+    if(i > r|| i < l)
+    {
+        return ;
+    }
+    if(l == r)
+    {
+        tree[index]=(inc);
+        return ;
+    }
+    int m=(l+r)/2;
+    updateNode(tree,l,m,i,inc,2*index);
+    updateNode(tree,m+1,r,i,inc,2*index+1);
+    tree[index]=min(tree[2*index],tree[2*index+1]);
+    return ;
+}
+int main() 
+{
+    FIO
+    int n,q;
+    cin >> n >> q;
+    int a[n];
+    for(int i=0;i<n;i++)
+    {
+        cin >> a[i];
+    }
+    int *tree=new int[4*n+1];
+    buildTree(a,0,n-1,tree,1);
+   // cout<<tree[1]<<"Tr"<<endl;
+    while(q--)
+    {
+        char ch;
+        cin >> ch;
+        if(ch == 'q')
+        {
+            int l,r;
+            cin >> l >> r;
+            l--;
+            r--;
+            cout<<query(tree,0,n-1,l,r,1)<<endl;
+        }
+        else
+        {
+            int in,el;
+            cin >> in >> el;
+            in--;
+            int diff=(el-a[in]);
+            updateNode(tree,0,n-1,in,el,1);
+        }
+    }
+	return 0;
+}
