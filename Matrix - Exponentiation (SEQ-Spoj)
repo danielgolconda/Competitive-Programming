@@ -1,0 +1,125 @@
+// SPOJ - RECURSIVE SEQUENCE
+#include <iostream>
+#include <bits/stdc++.h>
+#include <algorithm>
+#define lld long long 
+#define mod 1000000000
+#define FIO ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+using namespace std;
+vector <lld> a,b,c;
+lld k;
+vector<vector<lld>> multiply(vector<vector<lld>> f,vector<vector<lld>> s)
+{
+    vector<vector<lld>> R(k+1,vector<lld>(k+1));
+    for(int i=1;i<=k;i++)
+    {
+        for(int j=1;j<=k;j++)
+        {
+            for(int h=1;h<=k;h++)
+            {
+                R[i][j]=((R[i][j]+(f[i][h]*s[h][j])%mod)%mod);
+            }
+        }
+    }
+    return R;
+}
+vector <vector<lld>> fastexp(vector<vector<lld>> A,lld p)
+{
+    // BASE CASE
+    if(p == 1)
+    {
+        return A;
+    }
+    // CALCULATING A POWER P/2
+    vector<vector<lld>> s=fastexp(A,(p>>1));
+    // SQUARING IT 
+    s=multiply(s,s);
+    // IF P IS ODD
+    if(p&1)
+    {
+        vector<vector<lld>> j=multiply(A,s);
+        return j;
+    }
+    else
+    {
+        return s;
+    }
+}
+lld solve(lld n)
+{
+    // WE HAVE TO FIND F(N)
+    if(n == 0)
+    {
+        return 0;
+    }
+    if(n <= k)
+    {
+        return b[n-1];
+    }
+    // TAKING F1 VECTOR 
+    vector <lld> F1(k+1);
+    for(int i=1;i<=k;i++)
+    {
+        F1[i]=b[i-1];
+    }
+    // CREATING TRANSPOSE VECTOR 
+    vector <vector<lld>> T(k+1,vector<lld>(k+1));
+    for(int i=1;i<=k;i++)
+    {
+        for(int j=1;j<=k;j++)
+        {
+            // CONDITION TO FILL ALL NON LAST ROW ELEMENTS
+            if(i<k)
+            {
+                // FILLING THE ELEMENT AFTER THE DIAGONAL TO ONE
+                if(j == i+1)
+                {
+                    T[i][j]=1;
+                }
+                else
+                {
+                    T[i][j]=0;
+                }
+                continue;
+            }
+            // FILLING THE LAST ROW ELEMENTS
+            T[i][j]=c[k-j];
+        }
+    }
+    // CALCULATING T POWER N-1
+    T=fastexp(T,n-1);
+    lld ans=0;
+    // WE HAVE OUR ANSWER ON FIRST ROW OF THE RESULTANT MATRIX
+    for(int i=1;i<=k;i++)
+    {
+        ans=((ans + (T[1][i]*F1[i])%mod)%mod);
+    }
+    return ans;
+}
+int main() 
+{
+ //   FIO
+    lld tc,n;
+    cin >> tc;
+    while(tc--)
+    {
+        cin >> k;
+        for(int i=0;i<k;i++)
+        {
+            lld x;
+            cin >> x;
+            b.push_back(x);
+        }
+        for(int i=0;i<k;i++)
+        {
+            lld x;
+            cin >> x;
+            c.push_back(x);
+        }
+        cin >> n;
+        cout<<solve(n)<<endl;
+        b.clear();
+        c.clear();
+    } 
+	return 0;
+}
