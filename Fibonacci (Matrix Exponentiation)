@@ -1,0 +1,93 @@
+#include <iostream>
+#include <bits/stdc++.h>
+#include <algorithm>
+#define lld long long int 
+#define mod 1000000007
+#define FIO ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+using namespace std;
+lld k;
+vector<vector<lld>> multiply(vector<vector<lld>> A,vector<vector<lld>> B)
+{
+    vector<vector<lld>> C(k+1,vector<lld>(k+1));
+    for(int i=1;i<=k;i++)
+    {
+        for(int j=1;j<=k;j++)
+        {
+            for(int h=1;h<=k;h++)
+            {
+                C[i][j]=((C[i][j] + (A[i][h] * B[h][j])%mod)%mod);
+            }
+        }
+    }
+    return C;
+}
+vector<vector<lld>> fastexp(vector<vector<lld>> A,lld p)
+{
+    if(p == 1)
+    {
+        return A;
+    }
+    vector<vector<lld>> x=fastexp(A,(p>>1));
+    x=multiply(x,x);
+    if(p&1)
+    {
+        vector<vector<lld>> s=multiply(A,x);
+        return s;
+    }
+    else
+    {
+        return x;
+    }
+}
+lld compute(lld n)
+{
+    k=2;
+    vector <lld> F1(k+1);
+    F1[1]=1;
+    F1[2]=1;
+    if(n <= 2)
+    {
+        return 1;
+    }
+    vector <vector<lld>> T(k+1,vector<lld>(k+1));
+    for(int i=1;i<=k;i++)
+    {
+        for(int j=1;j<=k;j++)
+        {
+            //cout<<i<<" "<<j<<endl;
+            if(i<k)
+            {
+                if(j == i+1)
+                {
+                    T[i][j]=1;
+                }
+                else
+                {
+                    T[i][j]=0;
+                }
+                continue;
+            }
+            T[i][j]=1;
+        }
+    }
+    T=fastexp(T,n-1);
+    lld ans=0;
+    for(int i=1;i<=k;i++)
+    {
+        ans=((ans + (F1[i]*T[1][i])%mod)%mod);
+    }
+    return ans;
+}
+int main() 
+{
+    FIO
+    lld tc;
+    cin >> tc;
+    while(tc--)
+    {
+        lld n;
+        cin >> n;
+        cout<<compute(n)<<endl;
+    }
+	return 0;
+}
