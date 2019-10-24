@@ -1,0 +1,52 @@
+///Range Sum Query
+#include <iostream>
+#include <bits/stdc++.h>
+#include <algorithm>
+#define lld long long int 
+#define mod 1000000007
+#define FIO ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+using namespace std;
+int N;
+int bit[10000];
+void update(int i,int inc)
+{
+    while(i <= N)
+    {
+        bit[i]+=inc;
+        i = i + (i&(-i));
+    }
+}
+int query(int i)
+{
+    int ans=0;
+    while(i > 0)
+    {
+        ans+=bit[i];
+        i = i - (i&(-i));
+    }
+    return ans;
+}
+int main() 
+{
+    FIO
+    cin >> N;
+    int a[N+1];
+    for(int i=0;i<=N;i++)
+    {
+        bit[i]=0;
+    }
+    for(int i=1;i<=N;i++)
+    {
+        cin >> a[i];
+        update(i,a[i]);
+    }
+    int q;
+    cin >> q;
+    while(q--)
+    {
+        int l,r;
+        cin >> l >> r;
+        cout<<query(r)-query(l-1)<<endl;
+    }
+	return 0;
+}
